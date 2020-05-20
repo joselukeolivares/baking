@@ -123,7 +123,13 @@ public class MainActivity extends AppCompatActivity implements recipesAdapter.On
                             String shortDescription = stepJSON.getString("shortDescription");
                             step.setShortDescription(shortDescription);
                             String description = stepJSON.getString("description");
+                            if(description!=null){
+                                step.setDescription(description);
+                            }
                             String videoUrl = stepJSON.getString("videoURL");
+                            if(videoUrl!=null){
+                                step.setVideoURL(videoUrl);
+                            }
 
                             mRecipe.stepsArrayList.add(step);
                         }
@@ -150,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements recipesAdapter.On
         recipeIndex=recipeObj.id;
         Log.i(this.getClass().getName(), "Clicked: "+recipeIndex);
         Intent intent=new Intent(this,steps_recipe.class);
+        intent.putExtra("recipe",recipes.get(recipeIndex-1));
         startActivity(intent);
     }
 

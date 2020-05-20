@@ -23,12 +23,18 @@ public class MasterFragmentList  extends Fragment implements steps_adapter.onCli
 
     @Override
     public void onClikckFromAdapter_Step(steps step) {
-        Log.i(this.getClass().getName(),step.getShortDescription());
+        //Log.i(this.getClass().getName(),step.getShortDescription());
+        //Log.i(this.getClass().getName(),step.getVideoURL()!=null?step.getVideoURL():"Not videoURL");
+        updating_step_info(step);
+    }
+
+    public void updating_step_info(steps step){
+        mCallback.onRecipeSelected(step);
     }
 
 
     public interface onRecipeClickListener{
-        void onRecipeSelected(int position);
+        void onRecipeSelected(steps stepObj);
     }
 
 
@@ -70,13 +76,23 @@ public class MasterFragmentList  extends Fragment implements steps_adapter.onCli
         }else{
             recyclerView.setLayoutManager(layoutManager);
             recyclerView.setAdapter(steps_recipeAdapter);
+            updateRecipe_MasterFragment();
 
         }
 
 
 
+
+
+
+
+
+        return rootView;
+    }
+
+    public void updateRecipe_MasterFragment(){
         try{
-            recipe recipeObj=MainActivity.recipesToFragment();
+            recipe recipeObj=steps_recipe.recipesToFragment();
             Log.i(this.getClass().getName(),recipeObj.id+"");
             steps_recipeAdapter.update_dataStepsAdapter(recipeObj.getStepsArrayList());
             steps_recipeAdapter.notifyDataSetChanged();
@@ -85,11 +101,6 @@ public class MasterFragmentList  extends Fragment implements steps_adapter.onCli
         }catch (Exception e){
             e.printStackTrace();
         }
-
-
-
-
-        return rootView;
     }
 
 

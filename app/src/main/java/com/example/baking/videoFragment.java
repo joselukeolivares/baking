@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +18,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -26,7 +28,7 @@ import com.google.android.exoplayer2.util.Util;
 //import com.google.android.exoplayer2.ui.PlayerView;
 
 public class videoFragment extends Fragment {
-    private SimpleExoPlayerView playerView;
+    private PlayerView playerView;
     private SimpleExoPlayer player;
     private boolean playWhenReady = true;
     private int currentWindow = 0;
@@ -35,25 +37,25 @@ public class videoFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        /*
+
         if (Util.SDK_INT >= 24) {
-            //initializePlayer();
+            initializePlayer();
         }
 
-         */
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        /*
 
+        //playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
         hideSystemUi();
         if ((Util.SDK_INT < 24 || player == null)) {
-            //initializePlayer();
+           initializePlayer();
         }
 
-         */
+
     }
 
     @SuppressLint("InlinedApi")
@@ -69,23 +71,23 @@ public class videoFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        /*
+
         if (Util.SDK_INT < 24) {
             releasePlayer();
         }
 
-         */
+
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        /*
+
         if (Util.SDK_INT >= 24) {
             releasePlayer();
         }
 
-         */
+
     }
     public videoFragment(){
 
@@ -99,6 +101,7 @@ public class videoFragment extends Fragment {
 
         View rootView=inflater.inflate(R.layout.video_layout,container,false);
 
+
         playerView=rootView.findViewById(R.id.tv_video);
         return rootView;
 
@@ -106,8 +109,12 @@ public class videoFragment extends Fragment {
 
 
     }
+    private String recipeURL;
+    public void setURL(String recipeURL){
+        this.recipeURL=recipeURL;
+    }
 
-    private void initializePlayer() {
+    public void initializePlayer() {
 
         if (player == null) {
             DefaultTrackSelector trackSelector = new DefaultTrackSelector();
@@ -116,16 +123,20 @@ public class videoFragment extends Fragment {
 
         }
 
+
         //player = ExoPlayerFactory.newSimpleInstance(this);
         playerView.setPlayer(player);
 
-        Uri uri = Uri.parse(getString(R.string.media_url_mp4));
         //Uri uri = Uri.parse(getString(R.string.media_url_mp4));
-        MediaSource mediaSource = buildMediaSource(uri);
+        if(recipeURL!=null && !recipeURL.equals("")){
+            Uri uri = Uri.parse(recipeURL);
+            MediaSource mediaSource = buildMediaSource(uri);
 
-        player.setPlayWhenReady(playWhenReady);
-        player.seekTo(currentWindow, playbackPosition);
-        player.prepare(mediaSource, false, false);
+            player.setPlayWhenReady(playWhenReady);
+            player.seekTo(currentWindow, playbackPosition);
+            player.prepare(mediaSource, false, false);
+        }
+
 
 
     }
@@ -154,6 +165,12 @@ public class videoFragment extends Fragment {
             playWhenReady = player.getPlayWhenReady();
             player.release();
             player = null;
+        }
+    }
+
+    public void  stop_and_release(){
+        if(player!=null){
+            releasePlayer();
         }
     }
 }

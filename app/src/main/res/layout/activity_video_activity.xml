@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".video_activity">
+
+    <LinearLayout
+        android:id="@+id/step_details_linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/joselukeolivares"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <FrameLayout
+            android:id="@+id/tv_video_frameLyaout"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:scaleType="centerInside" />
+
+        <FrameLayout
+            android:id="@+id/step_description_frameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:scaleType="centerInside" />
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/buttons_container"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/step_details_linearLayout">
+
+
+        <ImageButton
+            android:id="@+id/prev_step_btn"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/prev_icon_arrow"
+            android:contentDescription="@string/app_name"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/prev_step_btn"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Previous Step" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/next_step_btn"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Next Step" />
+
+        <ImageButton
+            android:id="@+id/next_step_btn"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/arrow_icon"
+            android:contentDescription="@string/app_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,7 +9,7 @@
     <fragment
         android:id="@+id/master_fragment_list2"
         android:name="com.example.baking.MasterFragmentList"
-        android:layout_width="640dp"
+        android:layout_width="450dp"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -19,7 +19,7 @@
 
 
     <LinearLayout
-        android:layout_width="640dp"
+        android:layout_width="550dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -34,9 +34,9 @@
             android:scaleType="centerInside" />
 
         <FrameLayout
-            android:id="@+id/step_description"
+            android:id="@+id/step_description_frameLayout"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="250dp"
             android:scaleType="centerInside" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

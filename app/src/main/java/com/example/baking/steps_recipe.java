@@ -4,31 +4,92 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 public class steps_recipe extends AppCompatActivity implements MasterFragmentList.onRecipeClickListener{
+boolean tabletDevice=false;
+String className=this.getClass().getName();
+static recipe  actual_recipe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_steps_recipe);
 
-        if(findViewById(R.id.tv_video_frameLyaout)!=null){
+
+        Intent intentGet=getIntent();
+
+        if(intentGet!=null){
+            actual_recipe= (recipe) intentGet.getParcelableExtra("recipe");
+            setContentView(R.layout.activity_steps_recipe);
+            //videoURL=recipeObj.getStepsArrayList().get(0).videoURL;
+            try{
+                steps_recipe_service.updatingService(this,"Widgetworking");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            if(findViewById(R.id.tv_video_frameLyaout)!=null){
+                tabletDevice=true;
+                adminFragments(actual_recipe.getStepsArrayList().get(0));
+            }
+
+        }
+
+
+
+
+    }
+
+    public static recipe recipesToFragment(){
+        return actual_recipe;
+    }
+
+    private void step_detail(steps stepObj) {
+        Intent intent=new Intent(this,video_activity.class);
+        intent.putExtra("recipe",actual_recipe);
+        intent.putExtra("step",stepObj.getId());
+        startActivity(intent);
+    }
+
+    @Override
+    public void onRecipeSelected(steps stepFromMaster) {
+        //step_detail();
+        Log.i(className,"step:"+stepFromMaster.getId());
+        Log.i(className,stepFromMaster.getVideoURL()!=null?stepFromMaster.getVideoURL():"No hay video");
+        if(tabletDevice){
+            adminFragments(stepFromMaster);
+        }else{
+            step_detail(stepFromMaster);
+        }
+
+    }
+
+    public void adminFragments(steps stepObj){
+        String videoURL=stepObj.getVideoURL();
+        String description=stepObj.getDescription();
+
+        FragmentManager fragmentManagerObj=getSupportFragmentManager();
+        Log.i(className,"recipe videoURL:"+videoURL);
+        if(videoURL!=null && !videoURL.equals("")){
             videoFragment videoFragmentObj=new videoFragment();
-
-            FragmentManager fragmentManagerObj=getSupportFragmentManager();
-
+            videoFragmentObj.setURL(videoURL);
             fragmentManagerObj.beginTransaction()
-                    .add(R.id.tv_video_frameLyaout,videoFragmentObj)
+                    .replace(R.id.tv_video_frameLyaout,videoFragmentObj)
                     .commit();
 
+        }
+        if(description!=null && !description.equals("")){
+            step_description step_descriptionObj=new step_description();
+            step_descriptionObj.setDescription(description);
+            fragmentManagerObj.beginTransaction()
+                    .replace(R.id.step_description_frameLayout,step_descriptionObj)
+                    .commit();
         }
 
 
     }
 
-    @Override
-    public void onRecipeSelected(int position) {
 
-    }
 }
