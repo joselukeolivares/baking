@@ -2,15 +2,20 @@ package com.example.baking;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.SyncStateContract;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -31,8 +36,8 @@ public class videoFragment extends Fragment {
     private PlayerView playerView;
     private SimpleExoPlayer player;
     private boolean playWhenReady = true;
-    private int currentWindow = 0;
-    private long playbackPosition = 0;
+    private int currentWindow;
+    private static long playbackPosition;
 
     @Override
     public void onStart() {
@@ -50,10 +55,16 @@ public class videoFragment extends Fragment {
         super.onResume();
 
         //playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
+
+
+
         hideSystemUi();
         if ((Util.SDK_INT < 24 || player == null)) {
            initializePlayer();
+
         }
+
+
 
 
     }
@@ -93,13 +104,41 @@ public class videoFragment extends Fragment {
 
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+
+            outState.putInt("currentWindow",currentWindow);
+
+            outState.putLong("playbackPosition",playbackPosition);
+
+
+        Log.i("currentWindow",currentWindow+"");
+        Log.i("playbackPosition",playbackPosition+"");
+    }
+
     Context context;
+    View rootView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View rootView=inflater.inflate(R.layout.video_layout,container,false);
+        rootView=inflater.inflate(R.layout.video_layout,container,false);
+
+        if (savedInstanceState != null) {
+
+               // outState.putInt("currentWindow",currentWindow);
+               // outState.putLong("currentWindow",playbackPosition);
+
+            currentWindow=savedInstanceState.getInt("currentWindow");
+            playbackPosition=savedInstanceState.getLong("playbackPosition");
+            Log.i("Exoplayer","SavedInstance!=null:"+currentWindow+":"+playbackPosition);
+
+        }else {
+            playbackPosition=0;
+        }
 
 
         playerView=rootView.findViewById(R.id.tv_video);
@@ -112,6 +151,14 @@ public class videoFragment extends Fragment {
     private String recipeURL;
     public void setURL(String recipeURL){
         this.recipeURL=recipeURL;
+        Log.i("before",""+playbackPosition);
+        playbackPosition=0;
+        Log.i("after",""+playbackPosition);
+
+    }
+
+    public void resetVideoPlayback(){
+        playbackPosition=0;
     }
 
     public void initializePlayer() {
@@ -128,11 +175,12 @@ public class videoFragment extends Fragment {
         playerView.setPlayer(player);
 
         //Uri uri = Uri.parse(getString(R.string.media_url_mp4));
-        if(recipeURL!=null && !recipeURL.equals("")){
+        if(recipeURL!=null && !recipeURL.equals("") ){
             Uri uri = Uri.parse(recipeURL);
             MediaSource mediaSource = buildMediaSource(uri);
 
             player.setPlayWhenReady(playWhenReady);
+            Log.i("initializePlayer",playbackPosition+"");
             player.seekTo(currentWindow, playbackPosition);
             player.prepare(mediaSource, false, false);
         }
@@ -173,4 +221,34 @@ public class videoFragment extends Fragment {
             releasePlayer();
         }
     }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        FrameLayout frameLayout=rootView.findViewById(R.id.step_description_frameLayout);
+        ConstraintLayout constraintLayout=rootView.findViewById(R.id.buttons_container);
+        // Checking the orientation of the screen
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
+
+            //First Hide other objects (listview or recyclerview), better hide them using Gone.
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) playerView.getLayoutParams();
+
+            frameLayout.setVisibility(View.INVISIBLE);
+            constraintLayout.setVisibility(View.INVISIBLE);
+            params.width=params.MATCH_PARENT;
+            params.height=params.MATCH_PARENT;
+            playerView.setLayoutParams(params);
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+            //unhide your objects here.
+            frameLayout.setVisibility(View.VISIBLE);
+            constraintLayout.setVisibility(View.VISIBLE);
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) playerView.getLayoutParams();
+            params.width=params.MATCH_PARENT;
+            params.height=300;
+            playerView.setLayoutParams(params);
+        }
+    }
+
+
 }

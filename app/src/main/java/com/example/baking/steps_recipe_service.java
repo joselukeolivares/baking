@@ -15,10 +15,11 @@ public class steps_recipe_service extends IntentService {
         super("List_Ingredients");
     }
 
-    public static void updatingService(Context context,String ingredients){
+    public static void updatingService(Context context,String recipeName,String ingredients){
 
         Intent intent=new Intent(context,steps_recipe_service.class);
-        intent.putExtra("ingredient_list",ingredients);
+        intent.putExtra("recipe",recipeName);
+        intent.putExtra("ingredients",ingredients);
         Log.i("updatingService",ingredients);
         intent.setAction("ACTIONMAN");
         context.startService(intent);
@@ -29,12 +30,13 @@ public class steps_recipe_service extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
 
 
-            String ingredients=intent.getStringExtra("ingredient_list");
+            String recipe=intent.getStringExtra("recipe");
+        String ingredients=intent.getStringExtra("ingredients");
             AppWidgetManager appWidgetManagerObj=AppWidgetManager.getInstance(this);
-        Log.i("onHandleIntent",ingredients);
+        Log.i("onHandleIntent",recipe);
             //steps_recipe_widget.updateAppWidget(this,appWidgetManagerObj,ingredients,1);
         int[] appWidgetsId=appWidgetManagerObj.getAppWidgetIds(new ComponentName(this,steps_recipe_widget.class));
-            steps_recipe_widget.updateListRecipe(this,appWidgetManagerObj,ingredients,appWidgetsId);
+            steps_recipe_widget.updateListRecipe(this,appWidgetManagerObj,recipe,ingredients,appWidgetsId);
 
 
 

@@ -1,5 +1,6 @@
 package com.example.baking;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
@@ -14,13 +15,19 @@ import android.widget.TextView;
 public class video_activity extends AppCompatActivity {
     recipe recipeObj;
     int stepId;
+    String videoUrl;
+    String description;
     ImageButton previous_step;
     ImageButton next_step;
+    FragmentManager fragmentManagerObj=getSupportFragmentManager();
+    videoFragment videoFragmentObj=new videoFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_activity);
+
+
 
         previous_step=(ImageButton)findViewById(R.id.prev_step_btn);
 
@@ -50,12 +57,17 @@ public class video_activity extends AppCompatActivity {
         });
 
         Intent intent=getIntent();
-            if(intent!=null){
+
+        if(savedInstanceState!=null){
+            stepId=savedInstanceState.getInt("id_step");
+            recipeObj=savedInstanceState.getParcelable("step");
+            show_hide_buttons();
+            }else if(intent!=null){
                 recipeObj=intent.getParcelableExtra("recipe");
+
                 stepId=intent.getIntExtra("step",0);
                 //steps stepObj=recipeObj.getStepsArrayList().get(stepId);
                 //String description=stepObj.getDescription();
-
                 show_hide_buttons();
                 //updateFragmentsContent(stepObj.getVideoURL()==null?"":stepObj.getVideoURL(),description);
 
@@ -65,21 +77,25 @@ public class video_activity extends AppCompatActivity {
 
         }
 
+
         public void updateFragmentsContent(String videoUrl,String description){
 
 
-            FragmentManager fragmentManagerObj=getSupportFragmentManager();
-            videoFragment videoFragmentObj=new videoFragment();
+
+
+            videoFragmentObj.setURL(videoUrl);
+
             if(videoUrl!=null && !videoUrl.equals("")){
 
-                videoFragmentObj.setURL(videoUrl);
-
+                //videoFragmentObj.setURL(videoUrl);
+                videoFragmentObj.resetVideoPlayback();
 
                 fragmentManagerObj.beginTransaction()
                         .replace(R.id.tv_video_frameLyaout,videoFragmentObj)
                         .commit();
 
             }else{
+
                 fragmentManagerObj.beginTransaction()
                         .remove(videoFragmentObj)
                         .commit();
@@ -105,11 +121,15 @@ public class video_activity extends AppCompatActivity {
             }else if(((stepId)==0)){
                 previous_step.setVisibility(View.INVISIBLE);
                 next_step.setVisibility(View.VISIBLE);
+                Log.i("id","ID==0 and next is visible");
             }else{
                 previous_step.setVisibility(View.VISIBLE);
                 next_step.setVisibility(View.VISIBLE);
             }
 
+
+
+            /*
             Log.i(this.getClass().getName(),"id:"+stepId);
             Log.i(this.getClass().getName(),"recipe Steps:"+recipeObj.getStepsArrayList().size());
             Log.i(this.getClass().getName(),"recipe Steps:"+recipeObj.getId()+" "+recipeObj.getName());
@@ -118,10 +138,20 @@ public class video_activity extends AppCompatActivity {
                 Log.i(this.getClass().getName(),"recipe Steps:"+recipeObj.getStepsArrayList().get(i).getId());
                 Log.i(this.getClass().getName(),"recipe Steps:"+recipeObj.getStepsArrayList().get(i).getDescription());
             }
+            */
+            videoUrl=recipeObj.getStepsArrayList().get(stepId).getVideoURL();
+            description=recipeObj.getStepsArrayList().get(stepId).getDescription();
 
-            String videoUrl=recipeObj.getStepsArrayList().get(stepId).getVideoURL();
-            String description=recipeObj.getStepsArrayList().get(stepId).getDescription();
             updateFragmentsContent(videoUrl,description);
 
         }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("id_step",stepId);
+        outState.putString("url_video",videoUrl);
+        outState.putString("description",description);
+        outState.putParcelable("step",recipeObj);
+    }
 }

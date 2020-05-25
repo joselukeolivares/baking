@@ -6,7 +6,9 @@ import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.widget.TextView;
 
 public class steps_recipe extends AppCompatActivity implements MasterFragmentList.onRecipeClickListener{
 boolean tabletDevice=false;
@@ -25,7 +27,22 @@ static recipe  actual_recipe;
             setContentView(R.layout.activity_steps_recipe);
             //videoURL=recipeObj.getStepsArrayList().get(0).videoURL;
             try{
-                steps_recipe_service.updatingService(this,"Widgetworking");
+
+                String ingredientsWidget="";
+
+                for (int i=0;i<actual_recipe.getIngredientsArrayList().size();i++){
+
+                    ingredients ingredient=actual_recipe.getIngredientsArrayList().get(i);
+                    Log.i("recipe_widget",ingredient.getIngredient());
+                    ingredientsWidget+=ingredient.getIngredient()+"";
+
+                }
+                /*
+                TextView textView=(TextView)findViewById(R.id.appwidget_text);
+                textView.setMovementMethod(new ScrollingMovementMethod());
+
+                 */
+                steps_recipe_service.updatingService(this,actual_recipe.getName(),ingredientsWidget);
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -65,20 +82,25 @@ static recipe  actual_recipe;
         }
 
     }
-
+    FragmentManager fragmentManagerObj=getSupportFragmentManager();
+    videoFragment videoFragmentObj=new videoFragment();
     public void adminFragments(steps stepObj){
         String videoURL=stepObj.getVideoURL();
         String description=stepObj.getDescription();
 
-        FragmentManager fragmentManagerObj=getSupportFragmentManager();
+
         Log.i(className,"recipe videoURL:"+videoURL);
         if(videoURL!=null && !videoURL.equals("")){
-            videoFragment videoFragmentObj=new videoFragment();
+
             videoFragmentObj.setURL(videoURL);
             fragmentManagerObj.beginTransaction()
                     .replace(R.id.tv_video_frameLyaout,videoFragmentObj)
                     .commit();
 
+        }else{
+            fragmentManagerObj.beginTransaction()
+                    .remove(videoFragmentObj)
+                    .commit();
         }
         if(description!=null && !description.equals("")){
             step_description step_descriptionObj=new step_description();

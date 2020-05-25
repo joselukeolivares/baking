@@ -25,12 +25,7 @@
         <service android:name=".steps_recipe_service" >
         </service>
 
-        <provider
-            android:name="com.example.baking.steps_recipe_widget"
-            android:authorities="com.example.baking"
 
-            >
-        </provider>
 
         <activity android:name=".video_activity" />
         <activity android:name=".steps_recipe" />

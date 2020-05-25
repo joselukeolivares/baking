@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -22,6 +23,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import com.example.baking.ingredients;
 
@@ -64,14 +67,38 @@ public class MainActivity extends AppCompatActivity implements recipesAdapter.On
         recyclerView.setLayoutManager(layoutManage);
         recyclerView.setAdapter(recipesAdapterObj);
 
+        /*
 
-        getJson.getData(this, new VolleyCallBack() {
-            @Override
-            public void succesVolley(JSONArray response) {
-                Log.i(this.getClass().getName(), response.toString());
-                buildRecipesFromJSON(response);
+
+         */
+
+        if(getResources().getBoolean(R.bool.testing)){
+            Toast toast=Toast.makeText(this,"Json File in Assets, change testing value in R.bool for using Volley ",Toast.LENGTH_LONG);
+            toast.show();
+
+            try {
+                JSONArray jsonArray=new JSONArray(loadJSONFromAsset());
+                buildRecipesFromJSON(jsonArray);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        });
+        }else{
+            Toast toast=Toast.makeText(this,"Using Volley for load data",Toast.LENGTH_LONG);
+            toast.show();
+            getJson.getData(this, new VolleyCallBack() {
+
+
+                @Override
+                public void succesVolley(JSONArray response) {
+                    Log.i(this.getClass().getName(), response.toString());
+                    buildRecipesFromJSON(response);
+                }
+            });
+        }
+
+
+
+
 
 
         if (savedInstanceState == null) {
@@ -97,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements recipesAdapter.On
                     mRecipe.setServing(servings);
                     mRecipe.setUrlImage(imgURL);
                     JSONArray ingredientsList = recipe.getJSONArray("ingredients");
+                    String ingredientsStep="";
                     for (int j = 0; j < ingredientsList.length(); j++) {
                         if (ingredientsList.get(j) != null) {
                             ingredients ingredientsObj = new ingredients();
@@ -110,16 +138,24 @@ public class MainActivity extends AppCompatActivity implements recipesAdapter.On
                             ingredientsObj.setMeasure(measure);
 
                             mRecipe.ingredientsArrayList.add(ingredientsObj);
+                            ingredientsStep+=ingredientName+" "+quantity+" "+measure+"\n";
+
 
                         }
                     }
+
+                    steps stepIngredients = new steps();
+                    stepIngredients.setId(0);
+                    stepIngredients.setDescription(ingredientsStep);
+                    stepIngredients.setShortDescription("Ingredients");
+                    mRecipe.stepsArrayList.add(stepIngredients);
                     JSONArray stepsList = recipe.getJSONArray("steps");
                     for (int k = 0; k < stepsList.length(); k++) {
                         if (stepsList.getJSONObject(k) != null) {
                             JSONObject stepJSON = stepsList.getJSONObject(k);
                             steps step = new steps();
                             int idStep = stepJSON.getInt("id");
-                            step.setId(idStep);
+                            step.setId(idStep+1);
                             String shortDescription = stepJSON.getString("shortDescription");
                             step.setShortDescription(shortDescription);
                             String description = stepJSON.getString("description");
@@ -158,6 +194,22 @@ public class MainActivity extends AppCompatActivity implements recipesAdapter.On
         Intent intent=new Intent(this,steps_recipe.class);
         intent.putExtra("recipe",recipes.get(recipeIndex-1));
         startActivity(intent);
+    }
+
+    public String loadJSONFromAsset() {
+        String json = null;
+        try {
+            InputStream is = getAssets().open("fake_data.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
     }
 
 

@@ -3,7 +3,9 @@ package com.example.baking;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.widget.ListView;
 import android.widget.RemoteViews;
 
 /**
@@ -11,18 +13,23 @@ import android.widget.RemoteViews;
  */
 public class steps_recipe_widget extends AppWidgetProvider {
 
-    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, String list_updated,
+    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, String recipe,String ingredients,
                                 int appWidgetId) {
 
-        CharSequence widgetText =list_updated;
+        CharSequence widgetText =recipe;
         Log.i("Provider",widgetText+"");
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.steps_recipe_widget);
-        views.setTextViewText(R.id.appwidget_text, list_updated);
-        views.setTextViewText(R.id.widgetjl,"Hola mundo");
+
+        views.setTextViewText(R.id.appwidget_text, ingredients);
+        views.setTextViewText(R.id.widgetjl,recipe);
+
+
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
+
+
     }
 
     /*
@@ -36,10 +43,10 @@ public class steps_recipe_widget extends AppWidgetProvider {
 
      */
 
-    public static void updateListRecipe(Context context,AppWidgetManager appWidgetManager,String listUpdated,int[] appWidgetsId){
+    public static void updateListRecipe(Context context,AppWidgetManager appWidgetManager,String recipe,String ingredients,int[] appWidgetsId){
 
             for(int appWidgetId:appWidgetsId){
-                updateAppWidget(context, appWidgetManager,listUpdated, appWidgetId);
+                updateAppWidget(context, appWidgetManager,recipe,ingredients, appWidgetId);
             }
     }
 

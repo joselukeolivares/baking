@@ -48,7 +48,7 @@ public class steps_adapter extends RecyclerView.Adapter<steps_adapter.stepVH> {
         Log.i(this.getClass().getName(),id+":"+shortDesc);
 
         try{
-            holder.stepTextView.setText(id+":"+shortDesc);
+            holder.stepTextView.setText(shortDesc);
         }catch (Exception e){
             e.printStackTrace();
         }

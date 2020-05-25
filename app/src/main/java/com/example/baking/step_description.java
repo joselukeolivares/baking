@@ -1,6 +1,7 @@
 package com.example.baking;
 
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ public class step_description extends Fragment {
 
         View rootView=inflater.inflate(R.layout.step_description,container,false);
         description_txtView=(TextView)rootView.findViewById(R.id.step_description_in_fragment);
+        description_txtView.setMovementMethod(new ScrollingMovementMethod());
 
         return rootView;
     }
